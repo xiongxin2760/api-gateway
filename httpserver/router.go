@@ -5,6 +5,10 @@
 package httpserver
 
 import (
+	"api-gateway/httpserver/middleware"
+
+	"api-gateway/httpserver/controller/common"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,8 +28,6 @@ func httpRouter() *gin.Engine {
 	// 跨域支持
 	router.Use(middleware.NewCorsMiddleware())
 
-	// user-agent
-	router.Use(middleware.UserAgentMiddleware())
 	// register(router)
 	routerRegister(router)
 
@@ -33,7 +35,6 @@ func httpRouter() *gin.Engine {
 }
 
 func routerRegister(r *gin.Engine) {
-	// tokenAuth := &middleware.TokenAuth{}
 
 	apiGroup := r.Group("/api")
 	apiGroup.Use()

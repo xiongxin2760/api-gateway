@@ -18,11 +18,10 @@ func main() {
 
 	bootstrap.MustInit(ctx)
 
-	// ctx := context.TODO()
-	// bootstrap.MustLoadAppConfig("./conf/")
+	httpServer := bootstrap.StartServers(ctx)
 
-	// etcdclient.EtcdClientTest(ctx)
-	// fmt.Println("ook")
-	// fmt.Println("ook")
-	// fmt.Println("ook")
+	// 执行退出前的回调，如日志关闭落盘、其他资源清理工作
+	defer bootstrap.BeforeShutdown()
+
+	httpServer.ListenAndServe()
 }
