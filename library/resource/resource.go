@@ -9,10 +9,8 @@ import (
 
 	"api-gateway/library/types"
 
-	"github.com/go-redis/redis/v7"
 	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
 
@@ -31,14 +29,14 @@ var RecoverLogger *logrus.Logger
 // HTTPClient Http客户端
 var HTTPClient *resty.Client
 
-// RedisClient redis 客户端
-var RedisClient *redis.Client
+// // RedisClient redis 客户端
+// var RedisClient *redis.Client
 
 // // GcmsGrpcConn grpc 连接
 // var GcmsGrpcConn *grpc.ClientConn
 
 // UmsGrpcConn grpc 连接
-var UmsGrpcConn *grpc.ClientConn
+// var UmsGrpcConn *grpc.ClientConn
 
 // kafka conn
 // var KafkaProducer sarama.SyncProducer
