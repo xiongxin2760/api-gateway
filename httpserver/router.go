@@ -8,6 +8,7 @@ import (
 	"api-gateway/httpserver/middleware"
 
 	"api-gateway/httpserver/controller/common"
+	"api-gateway/httpserver/controller/upstreamServer"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,5 +42,13 @@ func routerRegister(r *gin.Engine) {
 	{
 		apiCommonGroup := apiGroup.Group("/common")
 		apiCommonGroup.GET("/probe", common.Probe)
+	}
+
+	// server 的注册接口
+	serverGroup := apiGroup.Group("/server")
+	{
+		serverGroup.POST("/register", upstreamServer.Register) // 注册server
+		serverGroup.POST("/search", upstreamServer.Search)     // 查询
+		serverGroup.POST("/update", upstreamServer.Update)     // 更新
 	}
 }
