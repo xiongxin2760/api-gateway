@@ -19,3 +19,7 @@ type ServerAPI struct {
 type ServerAPISearch struct {
 	ID int64 `json:"id"`
 }
+
+type RouterAPISearch struct {
+	ID int64 `json:"id"`
+}

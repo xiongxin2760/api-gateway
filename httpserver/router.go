@@ -7,6 +7,8 @@ package httpserver
 import (
 	"api-gateway/httpserver/middleware"
 
+	apimanage "api-gateway/httpserver/controller/apiManage"
+	clientrouter "api-gateway/httpserver/controller/clientRouter"
 	"api-gateway/httpserver/controller/common"
 	"api-gateway/httpserver/controller/upstreamServer"
 
@@ -51,4 +53,18 @@ func routerRegister(r *gin.Engine) {
 		serverGroup.POST("/search", upstreamServer.Search)     // 查询
 		serverGroup.POST("/update", upstreamServer.Update)     // 更新
 	}
+	// router 的注册接口
+	routerGroup := apiGroup.Group("/router")
+	{
+		routerGroup.POST("/register", clientrouter.Register) // 注册router
+		routerGroup.POST("/search", clientrouter.Search)     // 查询
+		routerGroup.POST("/update", clientrouter.Update)     // 更新
+	}
+	// 运行router
+	proxyGroup := apiGroup.Group("/proxy")
+	{
+		proxyGroup.Any("/*path", apimanage.Run)
+	}
+
+	// 插件
 }

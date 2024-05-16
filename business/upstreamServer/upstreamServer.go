@@ -7,6 +7,8 @@ import (
 	"api-gateway/repository/mysql"
 	"context"
 	"encoding/json"
+	"errors"
+	"net/url"
 
 	"github.com/sirupsen/logrus"
 )
@@ -35,6 +37,7 @@ func NewAPIServerByPO(ctx context.Context, po mysql.ServerPO) (*APIServer, error
 	}
 
 	return &APIServer{
+		ID:          po.ID,
 		Name:        po.Name,
 		Discription: po.Discription,
 		Timeout:     po.Timeout,
@@ -42,6 +45,23 @@ func NewAPIServerByPO(ctx context.Context, po mysql.ServerPO) (*APIServer, error
 		Balance:     po.Balance,
 		Service:     service,
 	}, nil
+}
+
+func (apiServer *APIServer) GetTargetURL(ctx context.Context) (*url.URL, error) {
+	logger := app.GetGlobalLogger(ctx)
+	var url *url.URL
+	if len(apiServer.Service) > 0 {
+		url, err := url.Parse(apiServer.Service[0].URL)
+		if err != nil {
+			return nil, err
+		}
+		return url, nil
+	}
+	logger.WithFields(logrus.Fields{
+		"apiServer.ID": apiServer.ID,
+	}).Errorln("get server url empty")
+	err := errors.New("get server url empty")
+	return nil, err
 }
 
 func (apiServer APIServer) ToPO(ctx context.Context) (mysql.ServerPO, error) {
@@ -66,20 +86,20 @@ func (apiServer APIServer) ToPO(ctx context.Context) (mysql.ServerPO, error) {
 }
 
 // 服务注册
-func Register(ctx context.Context, apiServer APIServer) error {
+func Register(ctx context.Context, apiServer APIServer) (APIServer, error) {
 	// 暂时将数据存储在内存
 	// apiServer := NewAPIServer(req)
 	po, err := apiServer.ToPO(ctx)
 	if err != nil {
-		return err
+		return APIServer{}, err
 	}
 	id, err := mysql.CreatServerPO(ctx, po)
 	if err != nil {
-		return err
+		return APIServer{}, err
 	}
 	apiServer.ID = id
 
-	return nil
+	return apiServer, nil
 }
 
 // 服务查询
