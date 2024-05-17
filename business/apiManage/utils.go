@@ -39,3 +39,10 @@ func errorHandler(ctx context.Context) func(w http.ResponseWriter, re *http.Requ
 		}
 	}
 }
+
+// 函数响应的修改和映射
+func modifyResponse(ctx context.Context) func(*http.Response) error {
+	return func(res *http.Response) error {
+		return nil
+	}
+}

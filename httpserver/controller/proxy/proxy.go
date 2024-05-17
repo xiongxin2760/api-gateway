@@ -1,11 +1,12 @@
-package apimanage
+package proxy
 
 import (
-	apimanage "api-gateway/business/apiManage"
+	"api-gateway/business/proxy"
 	"api-gateway/pkg/app"
 	"api-gateway/pkg/e"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,20 +15,19 @@ import (
 func Run(c *gin.Context) {
 	logger := app.GetGlobalLogger(c)
 	// 获取参数
-	routerID := c.Param("path")
+	routerID := strings.TrimLeft(c.Param("path"), "/path")
 	// 将参数转换为数字
-	toolID, err := strconv.Atoi(routerID)
+	serverID, err := strconv.Atoi(routerID)
 	if err != nil {
 		logger.WithError(err).Error("invalid json data")
 		app.ResponseDetailMsg(c, http.StatusInternalServerError, e.InvalidParams, err.Error())
 		return
 	}
 	// 用toolID查询
-	apimanage, err := apimanage.NewAPIManage(c, int64(toolID))
+	err = proxy.RunProxy(c, int64(serverID))
 	if err != nil {
 		logger.WithError(err).Error("invalid json data")
 		app.ResponseDetailMsg(c, http.StatusInternalServerError, e.InvalidParams, err.Error())
 		return
 	}
-	apimanage.Run()
 }

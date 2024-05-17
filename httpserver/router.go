@@ -7,9 +7,9 @@ package httpserver
 import (
 	"api-gateway/httpserver/middleware"
 
-	apimanage "api-gateway/httpserver/controller/apiManage"
 	clientrouter "api-gateway/httpserver/controller/clientRouter"
 	"api-gateway/httpserver/controller/common"
+	"api-gateway/httpserver/controller/proxy"
 	"api-gateway/httpserver/controller/upstreamServer"
 
 	"github.com/gin-gonic/gin"
@@ -63,7 +63,7 @@ func routerRegister(r *gin.Engine) {
 	// 运行router
 	proxyGroup := apiGroup.Group("/proxy")
 	{
-		proxyGroup.Any("/*path", apimanage.Run)
+		proxyGroup.Any("/*path", proxy.Run)
 	}
 
 	// 插件

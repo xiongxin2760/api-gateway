@@ -5,6 +5,7 @@ import (
 	"context"
 )
 
+// 这个router貌似是多余的，反倒增加管理成本
 type APIRouter struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`

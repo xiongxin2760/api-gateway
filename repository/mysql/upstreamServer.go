@@ -15,6 +15,7 @@ type ServerPO struct {
 	Retry       int    `json:"retry" gorm:"column:retry"`
 	Balance     string `json:"balance" gorm:"column:balance"`
 	Service     string `json:"service" gorm:"column:service"`
+	Plugins     string `json:"plugins" gorm:"column:plugins"`
 }
 
 func CreatServerPO(ctx context.Context, po ServerPO) (int64, error) {

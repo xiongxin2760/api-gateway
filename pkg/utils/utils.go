@@ -342,3 +342,8 @@ func Base64Decode(src []byte) ([]byte, error) {
 func Base64Encode(src []byte) []byte {
 	return []byte(base64.StdEncoding.EncodeToString(src))
 }
+
+func IsNil(a interface{}) bool {
+	defer func() { _ = recover() }()
+	return a == nil || reflect.ValueOf(a).IsNil()
+}
