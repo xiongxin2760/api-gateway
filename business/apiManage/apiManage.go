@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -62,9 +63,21 @@ func (api *APIManage) Run() {
 }
 
 func (api *APIManage) ParamReset() error {
-	// Header写回
 	c := api.GinCtx
 	logger := app.GetGlobalLogger(c)
+	// body 写回
+	bodyByte, err := json.Marshal(api.Body)
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"api.Body": utils.ObjectToLogStr(api.Body),
+		}).Errorln("marshal fail")
+		return err
+	}
+	c.Request.Body = NewAPIReadCloser(bodyByte)
+	contentLength := len(bodyByte)
+	api.Header["Content-Length"] = strconv.Itoa(contentLength)
+
+	// Header写回
 	newHeader := make(http.Header)
 	for k, v := range api.Header {
 		if strv, ok := v.(string); ok {
@@ -75,23 +88,21 @@ func (api *APIManage) ParamReset() error {
 		}
 	}
 	c.Request.Header = newHeader
+	c.Request.ContentLength = int64(contentLength)
+
 	// Param 写回
 	destURLQuery := api.URL.Query()
 	for k, v := range api.Param {
 		if strv, ok := v.(string); ok {
 			destURLQuery.Add(k, strv)
 		}
+		if strList, ok := v.([]string); ok {
+			for _, strv := range strList {
+				destURLQuery.Add(k, strv)
+			}
+		}
 	}
 	api.URL.RawQuery = destURLQuery.Encode()
-	// body 写回
-	bodyByte, err := json.Marshal(api.Body)
-	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"api.Body": utils.ObjectToLogStr(api.Body),
-		}).Errorln("marshal fail")
-		return err
-	}
-	c.Request.Body = NewAPIReadCloser(bodyByte)
 	return nil
 }
 

@@ -12,7 +12,7 @@ AppName = "api-proxy-server"
 RunMode = "release"
 
 # 服务开放端口
-Port = 8990
+Port = 8001
 
 # HTTPServer 的配置，对应结构体为 httpserver.Config
 # Server 的端口信息配置在 hestia/conf/hestia.toml 中
