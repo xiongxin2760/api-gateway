@@ -43,7 +43,7 @@ func routerRegister(r *gin.Engine) {
 	apiGroup.Use()
 	{
 		apiCommonGroup := apiGroup.Group("/common")
-		apiCommonGroup.GET("/probe", common.Probe)
+		apiCommonGroup.POST("/probe", common.Probe)
 	}
 
 	// server 的注册接口

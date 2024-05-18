@@ -70,6 +70,9 @@ func (api *APIManage) ParamReset() error {
 		if strv, ok := v.(string); ok {
 			newHeader[k] = []string{strv}
 		}
+		if strv, ok := v.([]string); ok {
+			newHeader[k] = strv
+		}
 	}
 	c.Request.Header = newHeader
 	// Param 写回

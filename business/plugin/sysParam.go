@@ -44,7 +44,7 @@ func (systemParamTranse SystemParamTranse) Process(ctx context.Context, apiManag
 		if utils.IsNil(sysVal) {
 			continue
 		}
-		switch rule.TarPath {
+		switch rule.TarPos {
 		case "header":
 			apiManage.Header[rule.TarPath] = sysVal
 		case "param":
