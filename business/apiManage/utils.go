@@ -3,9 +3,15 @@ package apimanage
 import (
 	"api-gateway/pkg/app"
 	"api-gateway/pkg/utils"
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/sirupsen/logrus"
 )
 
 // 定义请求代理的代理逻辑，调整请求的param和header，并代理至目标接口
@@ -41,8 +47,40 @@ func errorHandler(ctx context.Context) func(w http.ResponseWriter, re *http.Requ
 }
 
 // 函数响应的修改和映射
-func modifyResponse(ctx context.Context) func(*http.Response) error {
+func modifyResponse(ctx context.Context, resBody map[string]any) func(*http.Response) error {
 	return func(res *http.Response) error {
+		// Body 读取
+		logger := app.GetGlobalLogger(ctx)
+		if len(resBody) > 0 {
+			body := make(map[string]any)
+			buf, err := io.ReadAll(res.Body)
+			if err != nil {
+				logger.WithFields(logrus.Fields{
+					"buf": string(buf),
+				}).Errorln("read all fail")
+				return err
+			}
+			err = json.Unmarshal(buf, &body)
+			if err != nil {
+				logger.WithFields(logrus.Fields{
+					"buf": string(buf),
+				}).Errorln("unmarshal fail")
+				return err
+			}
+			for k, v := range resBody {
+				body[k] = v
+			}
+			bodyByte, err := json.Marshal(&body)
+			if err != nil {
+				logger.WithFields(logrus.Fields{
+					"bodyByte": string(bodyByte),
+				}).Errorln("marshal fail")
+				return err
+			}
+			newBuf := bytes.NewBufferString(string(bodyByte))
+			res.Body = io.NopCloser(newBuf)
+			res.Header["Content-Length"] = []string{fmt.Sprint(newBuf.Len())}
+		}
 		return nil
 	}
 }

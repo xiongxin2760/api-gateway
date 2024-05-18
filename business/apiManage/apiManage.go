@@ -27,6 +27,7 @@ type APIManage struct {
 	Param       map[string]any
 	Header      map[string]any
 	Body        map[string]any
+	ResBody     map[string]any
 	GinCtx      *gin.Context
 }
 
@@ -41,6 +42,7 @@ func NewAPIManage(c *gin.Context, serverID int64, serverURL *url.URL, retry int,
 		Param:       make(map[string]any),
 		Header:      make(map[string]any),
 		Body:        make(map[string]any),
+		ResBody:     make(map[string]any),
 		GinCtx:      c,
 	}
 	apiManage.paramInit()
@@ -51,7 +53,7 @@ func (api *APIManage) Run() {
 	director := director(api.GinCtx, api.URL)
 	// 定义错误处理器
 	errhandler := errorHandler(api.GinCtx)
-	responseHandler := modifyResponse(api.GinCtx)
+	responseHandler := modifyResponse(api.GinCtx, api.ResBody)
 	proxy := &httputil.ReverseProxy{Director: director, ErrorHandler: errhandler, ModifyResponse: responseHandler}
 
 	// 超时时间

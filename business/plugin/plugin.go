@@ -12,6 +12,7 @@ import (
 
 var IPluginFactoryMap = map[int64]PluginFactory{
 	1: NewSystemParamTranse,
+	2: NewResponseTranse,
 }
 
 // 插件的方法集合定义 -- 给外界使用的接口
