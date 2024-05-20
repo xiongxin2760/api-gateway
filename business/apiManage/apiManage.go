@@ -3,10 +3,10 @@ package apimanage
 import (
 	"api-gateway/pkg/app"
 	"api-gateway/pkg/utils"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -75,7 +75,9 @@ func (api *APIManage) ParamReset() error {
 		}).Errorln("marshal fail")
 		return err
 	}
-	c.Request.Body = NewAPIReadCloser(bodyByte)
+
+	newBuf := bytes.NewBufferString(string(bodyByte))
+	c.Request.Body = io.NopCloser(newBuf)
 	contentLength := len(bodyByte)
 	api.Header["Content-Length"] = strconv.Itoa(contentLength)
 
@@ -134,18 +136,12 @@ func (api *APIManage) paramInit() error {
 	}
 
 	// Body 读取
-	buf := make([]byte, 0, 1024*1024)
-	tempBuf := make([]byte, 1024)
-	for {
-		n, err := c.Request.Body.Read(tempBuf)
-		if err != nil {
-			if err != io.EOF {
-				log.Printf("An error occurred: %v", err)
-			}
-			buf = append(buf, tempBuf[:n]...)
-			break
-		}
-		buf = append(buf, tempBuf[:n]...)
+	buf, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"buf": string(buf),
+		}).Errorln("readAll fail")
+		return err
 	}
 	err = json.Unmarshal(buf, &api.Body)
 	if err != nil {
