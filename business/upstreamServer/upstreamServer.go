@@ -141,6 +141,8 @@ func Search(ctx context.Context, ID int64) (*APIServer, error) {
 	if err != nil {
 		return nil, err
 	}
+	// 这里修改一下，不是注册到mysql，而是注册到
+	// 同时增加etcd的监控项
 	apiServer, err := NewAPIServerByPO(ctx, *po)
 	if err != nil {
 		return nil, err

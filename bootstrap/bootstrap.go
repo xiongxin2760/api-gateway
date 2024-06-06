@@ -9,6 +9,7 @@ import (
 func MustInit(ctx context.Context) {
 	initLoggers(ctx)
 	initHTTPClient(ctx)
+	initEtcdClient(ctx)
 }
 
 var closeFns []func() error

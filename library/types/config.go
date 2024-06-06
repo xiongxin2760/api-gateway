@@ -29,6 +29,9 @@ type Config struct {
 
 	// mysql 配置
 	MysqlSetting MysqlClientSetting
+
+	// etcd 配置
+	EtceSetting EtceSetting
 }
 
 // HTTPServerConfig Config http server 的配置内容
@@ -77,4 +80,8 @@ type KafkaSetting struct {
 
 type MysqlClientSetting struct {
 	MessageDB string
+}
+
+type EtceSetting struct {
+	PeerURLS []string
 }

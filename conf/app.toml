@@ -78,3 +78,6 @@ Ums                  = "ums-grey-default.so-kf-portal-grey.svc.weiyun-int.com:87
 MessageDB = "mysql.db"
 MessageTablePrefix = "chat_message_"
 MaxTableNum = 10
+
+[EtceSetting]
+PeerURLS = ["http://10.95.17.171:8990", "http://10.95.17.171:8991", "http://10.95.17.171:8992"]

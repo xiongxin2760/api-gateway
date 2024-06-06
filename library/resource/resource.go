@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"gorm.io/gorm"
 )
 
@@ -43,3 +44,5 @@ var HTTPClient *resty.Client
 
 // mysql client
 var MysqlClients = make(map[string]*gorm.DB)
+
+var EtcdClient *clientv3.Client
