@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RunProxy(c *gin.Context, serverID int64) error {
+func RunProxy(c *gin.Context, serverID string) error {
 	// 获取serverID
-	server, err := upstreamserver.Search(c, serverID)
+	server, err := upstreamserver.ServerDiscoveryHandle.Search(c, serverID)
 	if err != nil {
 		return err
 	}

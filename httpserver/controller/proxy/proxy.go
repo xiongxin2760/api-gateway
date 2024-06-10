@@ -5,7 +5,6 @@ import (
 	"api-gateway/pkg/app"
 	"api-gateway/pkg/e"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -15,16 +14,9 @@ import (
 func Run(c *gin.Context) {
 	logger := app.GetGlobalLogger(c)
 	// 获取参数
-	routerID := strings.TrimLeft(c.Param("path"), "/path")
-	// 将参数转换为数字
-	serverID, err := strconv.Atoi(routerID)
-	if err != nil {
-		logger.WithError(err).Error("invalid json data")
-		app.ResponseDetailMsg(c, http.StatusInternalServerError, e.InvalidParams, err.Error())
-		return
-	}
+	serverID := strings.TrimLeft(c.Param("path"), "/path")
 	// 用toolID查询
-	err = proxy.RunProxy(c, int64(serverID))
+	err := proxy.RunProxy(c, serverID)
 	if err != nil {
 		logger.WithError(err).Error("invalid json data")
 		app.ResponseDetailMsg(c, http.StatusInternalServerError, e.InvalidParams, err.Error())

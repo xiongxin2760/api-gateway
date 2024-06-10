@@ -31,8 +31,8 @@ type APIManage struct {
 	GinCtx      *gin.Context
 }
 
-func NewAPIManage(c *gin.Context, serverID int64, serverURL *url.URL, retry int, timeOut int) (APIManage, error) {
-	name := fmt.Sprintf("server_%d", serverID)
+func NewAPIManage(c *gin.Context, serverID string, serverURL *url.URL, retry int, timeOut int) (APIManage, error) {
+	name := fmt.Sprintf("server_%s", serverID)
 	apiManage := APIManage{
 		Name:        name,
 		URL:         serverURL,

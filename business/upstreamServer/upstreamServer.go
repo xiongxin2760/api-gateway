@@ -15,7 +15,7 @@ import (
 )
 
 type APIServer struct {
-	ID          int64             `json:"id"`
+	ID          string            `json:"id"`
 	Name        string            `json:"name"`
 	Discription string            `json:"discription"`
 	Timeout     int               `json:"timeout"`
@@ -24,6 +24,20 @@ type APIServer struct {
 	Service     []types.ServerAPI `json:"service"` // TODO：升级为服务发现
 	InPlugins   []plugin.PluginVO `json:"plugins"` // 用户录入
 	Plugins     []plugin.IPlugin  `json:"-"`       // 工具列表
+}
+
+func NewAPIServerByStr(ctx context.Context, apiServerStr string) (*APIServer, error) {
+	logger := app.GetGlobalLogger(ctx)
+	// 先转换为po复用这个结构
+	var po mysql.ServerPO
+	err := json.Unmarshal([]byte(apiServerStr), &po)
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"apiServerStr": apiServerStr,
+		}).Errorln("apiServerStr unmarshal fail")
+		return nil, err
+	}
+	return NewAPIServerByPO(ctx, po)
 }
 
 func NewAPIServerByPO(ctx context.Context, po mysql.ServerPO) (*APIServer, error) {
@@ -119,46 +133,34 @@ func (apiServer APIServer) ToPO(ctx context.Context) (mysql.ServerPO, error) {
 }
 
 // 服务注册
-func Register(ctx context.Context, apiServer APIServer) (APIServer, error) {
-	// 暂时将数据存储在内存
-	// apiServer := NewAPIServer(req)
-	po, err := apiServer.ToPO(ctx)
-	if err != nil {
-		return APIServer{}, err
-	}
-	id, err := mysql.CreatServerPO(ctx, po)
-	if err != nil {
-		return APIServer{}, err
-	}
-	apiServer.ID = id
+// func Register(ctx context.Context, apiServer APIServer) (APIServer, error) {
+// 	return APIServer{}, nil
+// }
 
-	return apiServer, nil
-}
+// // 服务查询
+// func Search(ctx context.Context, ID int64) (*APIServer, error) {
+// 	po, err := mysql.SearchServerPO(ctx, ID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	// 这里修改一下，不是注册到mysql，而是注册到
+// 	// 同时增加etcd的监控项
+// 	apiServer, err := NewAPIServerByPO(ctx, *po)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return apiServer, nil
+// }
 
-// 服务查询
-func Search(ctx context.Context, ID int64) (*APIServer, error) {
-	po, err := mysql.SearchServerPO(ctx, ID)
-	if err != nil {
-		return nil, err
-	}
-	// 这里修改一下，不是注册到mysql，而是注册到
-	// 同时增加etcd的监控项
-	apiServer, err := NewAPIServerByPO(ctx, *po)
-	if err != nil {
-		return nil, err
-	}
-	return apiServer, nil
-}
-
-// 更新服务
-func Update(ctx context.Context, apiServer APIServer) error {
-	po, err := apiServer.ToPO(ctx)
-	if err != nil {
-		return err
-	}
-	err = mysql.UpdateServerPO(ctx, po)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// // 更新服务
+// func Update(ctx context.Context, apiServer APIServer) error {
+// 	po, err := apiServer.ToPO(ctx)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	err = mysql.UpdateServerPO(ctx, po)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }

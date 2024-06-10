@@ -10,6 +10,7 @@ func MustInit(ctx context.Context) {
 	initLoggers(ctx)
 	initHTTPClient(ctx)
 	initEtcdClient(ctx)
+	initUpServer(ctx)
 }
 
 var closeFns []func() error
